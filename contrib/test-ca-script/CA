@@ -1,0 +1,236 @@
+#!/bin/bash
+
+# Basic CA script
+
+# Richard Monk <rmonk@redhat.com>
+
+# Version 1.0
+
+CONF="openssl.cnf"
+finalAlert="30 days"
+
+cmd="$1"
+shift
+file="$1"
+shift
+args="$@"
+
+# import settings
+source ca.conf
+
+# export variables to allow openssl to pick up on them
+export default_bits
+export default_md
+export countryName
+export stateOrProvinceName
+export localityName
+export organizationName
+export organizationalUnitName
+export emailAddress
+
+# The commonName of the cert, will be set by user
+export request_cn=""
+
+# Used when signing sub CAs
+export nameConstraints=""
+
+case "$cmd" in
+create)
+    if [ -z "$file" ]; then
+       echo "ERROR: Must specify an admin email address "
+       exit 1
+    fi
+	mkdir -p certs/by-name
+	mkdir -p crl
+	mkdir -p private
+	mkdir -p requests
+	echo "10" > serial
+	touch index.txt
+	echo "01" > crlnumber
+	echo "$file" > admin-email
+	echo "" > alerted-certs
+
+	if [ -e "cacert.pem" ]; then
+		echo "WARNING: Existing CA found.  Not continuing"
+		exit 1
+	fi
+
+	lifetime="$file" 
+	if [ -z "$lifetime" ]; then
+		echo "Using default lifetime of 10 yrs"
+		lifetime=3650
+	fi
+	
+	# Create a new CA
+	openssl req -new -x509 -days $lifetime -out cacert.pem -keyout private/cakey.pem -config $CONF
+
+	# Create a new CRL
+	echo "===Creating empty CRL==="
+	echo "CRL must be updated at least every 365 days if used"
+	openssl ca -gencrl -crldays 365 -out crl/crl.pem -config $CONF
+
+;;
+request)
+    # Do we not have a subjectAltName?
+    if [ -z "$subjectAltName" ]; then
+        subjectAltName='email:copy'
+    fi
+    # Make the altname available
+    export subjectAltName
+
+    # Make the key
+    keysize="$default_bits"
+    if [ -z "$keysize" ]; then
+        echo "Unable to determine default size, using 2048"
+        keysize=2048
+    fi
+    echo "Generating $keysize bit RSA key at requests/${file}.key"
+    openssl genrsa -out requests/${file}.key $keysize
+
+    # Create the req
+    export request_cn="${file}"
+	openssl req -new -key requests/${file}.key -out requests/${file}.req -config $CONF
+;;
+sign*)
+	echo "cmd is $cmd"
+	case "$cmd" in
+	sign-server)
+		extension="server_cert"
+	;;
+	sign-client)
+		extension="client_cert"
+	;;
+	sign-both)
+		extension="both_cert"
+	;;
+    sign-ca)
+        extension="ca_cert"
+        export nameConstraints="$args"
+    ;;
+	*)
+		echo "Using default server_cert extension"
+		extension="server_cert"
+	;;
+	esac
+	echo "INFO: First cert will have serial $(cat serial)"
+	echo "signing as $extension"
+	if openssl ca -config $CONF -extensions $extension -infiles "$file"; then
+		mv "$file" requests/processed
+        echo "Reindexing CA certs by name..."
+        ./CA reindex
+	fi
+;;
+reindex)
+	cd certs/by-name
+	while read cert; do	
+		commonName="$(grep '^[[:space:]]*Subject:' $cert | grep -o 'CN=[^/]*' | cut -d= -f2)"
+		if [ -e "${commonName}.pem" ]; then
+			currentSerial="$(openssl x509 -in "$commonName.pem" -serial -noout | cut -d= -f2)"
+			newSerial="$(openssl x509 -in "$cert" -serial -noout | cut -d= -f2)"
+			if [ "$(bc <<<"ibase=16; $currentSerial - $newSerial")" -lt 0 ]; then
+                echo "Updating $commonName with new cert..."
+				rm "${commonName}.pem" 2> /dev/null
+				ln -s "$cert" "${commonName}.pem"
+			fi
+		else
+            echo "Linking $commonName..."
+			rm "${commonName}.pem" 2> /dev/null
+			ln -s "$cert" "${commonName}.pem"
+		fi
+	done < <(find ../ -maxdepth 1 -iname '*.pem')
+;;
+
+find)
+	# find a cert based on CN
+	search="$file"
+	grep "Subject:.*$search" certs/*
+;;
+revoke)
+	# Revoke the cert
+	echo "revoking $file"
+	echo "Subject $(grep 'Subject:' $file)"
+	openssl ca -config $CONF -revoke $file
+	echo "CRL must be updated at least every 365 days if used"
+	openssl ca -gencrl -crldays 365 -out crl/crl.pem -config $CONF
+;;
+expirecheck)
+	# Check for certs that expire soon
+	if [ -n "$file" ]; then
+		alertTime="$file"
+	else
+		alertTime="90"
+	fi
+
+	# Rebuild the index
+	echo "Reindexing certificates"
+	./CA reindex
+	expireTime="$(date -d "now + $scanTime" +%s)"
+	while read cert; do 
+		certExpire="$(openssl x509 -in "$cert" -noout -dates | grep '^notAfter' | cut -d= -f2)"
+		certExpireDate="$(date -d "$certExpire" +%s)"
+
+		alertDate="$(date -d "now +  $alertTime days" +%s)"
+		finalAlertDate="$( date -d "now + $finalAlert days" +%s)"
+		certSerial="$(openssl x509 -in "$cert" -noout -serial | grep '^serial' | cut -d= -f2)"
+		certName="$(basename "$cert" .pem)"
+
+		# Check alert state
+		if grep -q "^${certSerial} final$" alerted-certs; then
+			# Already hit final alert
+			echo "Cert $certName already got final alert"
+		elif [ $finalAlertDate -ge $certExpireDate ]; then
+			# Final alert
+			CAName="$(basename $(pwd))"
+			echo -e "Cert $certName expires on $certExpire\n\n$(cat $cert)" | mutt -s "CA $CAName Final alert: Cert $certName near expiration" $(cat admin-email)	
+			echo "$certSerial final" >> alerted-certs
+		elif [ $alertDate -ge $certExpireDate ]; then
+			# Cert is going to expire in the alert time
+			if grep -q "^${certSerial}$" alerted-certs; then
+				# skip it, already alerted
+				echo "Cert $certName already alerted"
+			else
+				CAName="$(basename $(pwd))"
+				echo -e "Cert $certName expires on $certExpire\n\n$(cat $cert)" | mutt -s "CA $CAName alert: Cert $certName near expiration" $(cat admin-email)	
+				echo "$certSerial" >> alerted-certs
+			fi
+		fi
+	done < <(find certs/by-name -iname '*.pem')
+;;
+*)
+	echo "$0 usage:
+create:
+  example: $0 create adminemail@nowhere.org
+    Creates a new directory structure, CA cert, and CRL for a new CA
+    The admin email address is used for cert expiration alerts
+
+request:
+  examples: $0 request test@nowhere.org
+            $0 request my.server.com
+  Creates a new certificate request for test@nowhere.org or my.server.com
+
+sign-*:
+  examples: $0 sign-server requests/my.server.com.req
+            $0 sign-client requests/test@nowhere.org.req
+            $0 sign-ca     requests/ca@my.test.req 'permitted;.test.com'
+  Signs a request as either a server or client certificate
+
+  When signing a ca, include the nameConstraints section after the 
+  request file to specify what this CA can do.  Leave blank for full sub CA
+
+reindex:
+  example: $0 reindex
+  Creates symbolic links as certs/by-name/commonName for known certs
+  Latest signed cert for a given CN is used.
+
+find:
+  example: $0 find nowhere.org
+  Return the file name of any certificates that contain nowhere.org in the Subject
+
+revoke:
+  example: $0 revoke certs/43.pem
+  Revoke (and generate new CRL) the cert certs/43.pem
+  Use find to locate the filename of the certificate you want to revoke
+"
+	exit 0
+esac
+
