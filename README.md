@@ -11,7 +11,7 @@ Configuration of the server is done in JSON and is by default kept in the curren
 You can override the location by setting `CACOPHONY_CONFIG` environment variable.
 
 | Name            | Type | Parent | Value                                                               |
-|-----------------|------|------------------------------------------------------------------------------|
+|-----------------|------|--------|---------------------------------------------------------------------|
 | AUTH\_DECORATOR | str  | None   | cacophony.decorators:remote\_user\_required (module.name:decorator) |
 | CA              | dict | None   | A dictionary holding CA configuration data                          |
 | "NAME"          | dict | CA     | Configuration info for the CA called "NAME"                         |
