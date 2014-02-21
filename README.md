@@ -13,6 +13,7 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
 | Name            | Type | Parent | Value                                                               |
 |-----------------|------|--------|---------------------------------------------------------------------|
 | AUTH\_DECORATOR | str  | None   | cacophony.decorators:remote\_user\_required (module.name:decorator) |
+| LOGFILE         | str  | None   | File name for the application level log                             |
 | CA              | dict | None   | A dictionary holding CA configuration data                          |
 | "NAME"          | dict | CA     | Configuration info for the CA called "NAME"                         |
 | privKey         | str  | "NAME" | Path to the CA's private key.                                       |
@@ -27,7 +28,7 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
 ### Example Config
 ```json
 {
-    "DEBUG": true,
+    "DEBUG": false,
     "PREFERRED_URL_SCHEME": "https",
     "LOGGER_NAME": "cacophony",
     "AUTH_DECORATOR": "cacophony.decorators:remote_user_required",
@@ -62,3 +63,9 @@ This decorator assumes that cacophony is running behind another web server which
 | :----: | :-----------------------: | :--------: | :------------------------: | :-----------: |
 | GET    | None                      | None       | json                       | Yes           |
 | PUT    | email,[insecure\_policy]  | json       | json on error, txt on cert | Yes           |
+
+
+## Deployment
+
+### Apache with mod\_wsgi
+TODO

@@ -2,6 +2,7 @@
     "DEBUG": true,
     "PREFERRED_URL_SCHEME": "https",
     "LOGGER_NAME": "cacophony",
+    "LOGFILE": "cacophony.log",
     "AUTH_DECORATOR": "cacophony.decorators:remote_user_required",
     "CA": {        
         "Test": { 

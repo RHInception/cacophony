@@ -45,9 +45,14 @@ class CertificateAPI(MethodView):
             # if the hostname does not exist ...
             if hostname not in cur_ca.list_certs().keys():
                 if insecure_policy:
-                    app.logger.info(
+                    app.logger.warn(
                         '%s generated an insecure certificate for %s' % (
                             request.remote_user, hostname))
+                else:
+                    app.logger.info(
+                        '%s generated an insecure certificate for %s' % (
+                        request.remote_user, hostname))
+
                 req, keys = cur_ca.create_req(
                     hostname=hostname, emailAddress=email)
                 cert = cur_ca.sign_server_cert(req, format="string")
