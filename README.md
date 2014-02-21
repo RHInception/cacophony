@@ -45,12 +45,20 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
 }
 ```
 
-
 Further configuration items can be found at http://flask.pocoo.org/docs/config/#builtin-configuration-values
+
+## Authentication
+cacophony uses a simple decorater system for authentication.
+
+### cacophony.decorators:remote\_user\_required
+This decorator assumes that cacophony is running behind another web server which is taking care of authentication. If REMOTE\_USER is passed to cacophony from the web server cacophony assumes authentication has succeeded. If it is not passed through cacophony treats the users as unauthenticated.
+
+**WARNING**: When using this decorator it is very important that cacophony not be reachable by any means other than through the front end webserver!!
+
 
 ## URLs
 ### /api/v2/certificate/*$ENVIRONMENT*/*$HOSTNAME*/
-| Method | Inputs | Input Type | Respones Type   | Auth Required |
-| :----: | :----: | :--------: | :-------------: | :-----------: |
-| GET    | None   | None       | json            | Yes           |
-| PUT    | email  | json       | json,txt (cert) | Yes           |
+| Method | Inputs                    | Input Type | Respones Type              | Auth Required |
+| :----: | :-----------------------: | :--------: | :------------------------: | :-----------: |
+| GET    | None                      | None       | json                       | Yes           |
+| PUT    | email,[insecure\_policy]  | json       | json on error, txt on cert | Yes           |
