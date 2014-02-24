@@ -69,3 +69,32 @@ This decorator assumes that cacophony is running behind another web server which
 
 ### Apache with mod\_wsgi
 TODO
+
+
+## Usage
+
+### curl
+The authentication mechanism used in the front end webserver could be set up to use vastly different schemes. Instead of covering every possible authentication style which could be used we will work with two common ones in usage examples: htacces and kerberos.
+
+*Note*: Setting up the front end proxy server for authentication is out of scope for this documentation.
+
+### htaccess
+```
+$ curl -X GET -user "USERNAME" https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
+Password:
+... # 200 and json data if exists, otherwise 404 and error json
+$ curl -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
+Password:
+... # 201 and a certificate returned
+```
+
+### kerberos
+```
+$ kinit -f USERNAME
+Password for USERNAME@DOMAIN:
+$ curl --delegation policy -X GET https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
+... # 200 and json data if exists, otherwise 404 and error json
+$ curl --delegation policy -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
+... # 201 and a certificate returned
+```
+
