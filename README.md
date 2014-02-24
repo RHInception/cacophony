@@ -68,8 +68,12 @@ This decorator assumes that cacophony is running behind another web server which
 ## Deployment
 
 ### Apache with mod\_wsgi
-TODO
+mod_wsgi can be used with Apache to mount cacophony. Example mod_wsgi files are located in contrib/mod_wsgi.
 
+* cacophony.conf: The mod_wsgi configuration file. This should be modified and placed in /etc/httpd/conf.d/.
+* cacophony.wsgi: The WSGI file that mod_wsgi will use. This should be modified and placed in the location noted in cacophony.conf
+
+*Note*: When using mod_wsgi you will still need to set up authentication such as mod_auth_kerb.
 
 ## Usage
 
@@ -97,4 +101,3 @@ $ curl --delegation policy -X GET https://cacophony.example.com/api/v1/certifica
 $ curl --delegation policy -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
 ... # 201 and a certificate returned
 ```
-
