@@ -131,32 +131,3 @@ class CA(object):
                         item['_cn_%s' % (key)] = data[1]
             results[item['_cn_hostname']] = item
         return results
-
-
-if __name__ == '__main__':
-    # Test Mode
-    privKeyFile = "Test-CA/private/cakey.pem"
-    pubKeyFile = "Test-CA/cacert.pem"
-    serialFile = "Test-CA/serial"
-    indexFile = "Test-CA/index.txt"
-
-    certKeySize = 4096
-    validTime = 60 * 60 * 24 * 365
-
-    # Create a new certificate
-    myCA = CA(
-        pubCert=pubKeyFile,
-        privKey=privKeyFile,
-        privPass="gb6jEc2tBKusJPoDILB8",
-        serial=serialFile,
-        index=indexFile,
-        keySize=certKeySize,
-        validTime=validTime)
-    print myCA.list_certs()
-    req, keys = myCA.create_req('test.host.name', 'rmonk@redhat.com')
-    print "Request:"
-    print req
-    print keys
-    cert = myCA.sign_server_cert(req, format="string")
-    print "Certificate:"
-    print cert
