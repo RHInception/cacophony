@@ -1,0 +1,7 @@
+include LICENSE
+include MANIFEST.in
+include README.md
+include config.json
+include setup.py
+recursive-include contrib *
+recursive-include test *

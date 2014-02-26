@@ -25,6 +25,7 @@ setup(
     classifiers=[
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Development Status :: 5 - Production/Stable',
-        'Programming Language :: Python'],
+        'Programming Language :: Python',
+    ],
 
 )
