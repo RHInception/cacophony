@@ -10,19 +10,19 @@ Configuration of the server is done in JSON and is by default kept in the curren
 
 You can override the location by setting `CACOPHONY_CONFIG` environment variable.
 
-| Name            | Type | Parent | Value                                                               |
-|-----------------|------|--------|---------------------------------------------------------------------|
-| AUTH\_DECORATOR | str  | None   | cacophony.decorators:remote\_user\_required (module.name:decorator) |
-| LOGFILE         | str  | None   | File name for the application level log                             |
-| CA              | dict | None   | A dictionary holding CA configuration data                          |
-| "NAME"          | dict | CA     | Configuration info for the CA called "NAME"                         |
-| privKey         | str  | "NAME" | Path to the CA's private key.                                       |
-| privPass        | str  | "NAME" | Password for CA.                                                    |
-| pubCert         | str  | "NAME" | Path to the public cert.                                            |
-| serial          | str  | "NAME" | Path to the CA's serial file.                                       |
-| index           | str  | "NAME" | Path to the CA's index file.                                        |
-| keySize         | int  | "NAME" | Key size to use                                                     |
-| validTime       | int  | "NAME" | Length of time the certificates will be valid for.                  |
+| Name            | Type | Parent        | Value                                                               |
+|-----------------|------|---------------|---------------------------------------------------------------------|
+| AUTH\_DECORATOR | str  | None          | cacophony.decorators:remote\_user\_required (module.name:decorator) |
+| LOGFILE         | str  | None          | File name for the application level log                             |
+| CA              | dict | None          | A dictionary holding CA configuration data                          |
+| "ENVIRONMENT"   | dict | CA            | Configuration info for the CA to be used in "ENVIRONMENT"           |
+| privKey         | str  | "ENVIRONMENT" | Path to the CA's private key.                                       |
+| privPass        | str  | "ENVIRONMENT" | Password for CA.                                                    |
+| pubCert         | str  | "ENVIRONMENT" | Path to the public cert.                                            |
+| serial          | str  | "ENVIRONMENT" | Path to the CA's serial file.                                       |
+| index           | str  | "ENVIRONMENT" | Path to the CA's index file.                                        |
+| keySize         | int  | "ENVIRONMENT" | Key size to use                                                     |
+| validTime       | int  | "ENVIRONMENT" | Length of time the certificates will be valid for.                  |
 
 
 ### Example Config
@@ -81,6 +81,10 @@ mod_wsgi can be used with Apache to mount cacophony. Example mod_wsgi files are 
 
 ### curl
 The authentication mechanism used in the front end webserver could be set up to use vastly different schemes. Instead of covering every possible authentication style which could be used we will work with two common ones in usage examples: htacces and kerberos.
+
+The first command will look up to see if a certificate already exists for an ENVIRONMENT/HOSTNAME. If it does it will return some basic json metadata. If it does not exist a 404 will be returned.
+
+The second command will attempt to create a new certificate. If the certificate doesn't exist it will be created and returned to the client. If a certificate has already been created for the host then a 409 with an error message will be returned.
 
 *Note*: Setting up the front end proxy server for authentication is out of scope for this documentation.
 
