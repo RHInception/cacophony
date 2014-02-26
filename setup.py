@@ -18,6 +18,10 @@ setup(
         'cacophony': os.path.join('src', 'cacophony')
     },
     packages=find_packages('src'),
+    install_requires=[
+        'flask>=0.9',
+        'pyOpenSSL',
+    ],
     classifiers=[
         'License :: OSI Approved :: GNU General Public License (GPL)',
         'Development Status :: 5 - Production/Stable',
