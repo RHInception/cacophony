@@ -86,7 +86,7 @@ The authentication mechanism used in the front end webserver could be set up to 
 
 ### htaccess
 ```
-$ curl -X GET -user "USERNAME" https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
+$ curl -X GET --user "USERNAME" https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
 Password:
 ... # 200 and json data if exists, otherwise 404 and error json
 $ curl -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
