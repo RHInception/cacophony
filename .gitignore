@@ -1,5 +1,8 @@
 *.py[cod]
 cacophony.log
+test/Test-CA/certs/
+test/Test-CA/requests/
+test/Test-CA/index.txt
 
 # C extensions
 *.so
