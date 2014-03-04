@@ -14,6 +14,7 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
 |-----------------|------|---------------|---------------------------------------------------------------------|
 | AUTH\_DECORATOR | str  | None          | cacophony.decorators:remote\_user\_required (module.name:decorator) |
 | LOGFILE         | str  | None          | File name for the application level log                             |
+| LOGLEVEL        | str  | None          | Log level to use (DEBUG, INFO, WARN, FATAL). Unset defaults to INFO |
 | CA              | dict | None          | A dictionary holding CA configuration data                          |
 | "ENVIRONMENT"   | dict | CA            | Configuration info for the CA to be used in "ENVIRONMENT"           |
 | privKey         | str  | "ENVIRONMENT" | Path to the CA's private key.                                       |
