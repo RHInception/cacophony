@@ -23,6 +23,8 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
 | index           | str  | "ENVIRONMENT" | Path to the CA's index file.                                        |
 | keySize         | int  | "ENVIRONMENT" | Key size to use                                                     |
 | validTime       | int  | "ENVIRONMENT" | Length of time the certificates will be valid for.                  |
+| certStore       | str  | "ENVIRONMENT" | Path to write out certificates after generation.                    |
+| reqStore        | str  | "ENVIRONMENT" | Path to write out requests after generation.                        |
 
 
 ### Example Config
@@ -41,6 +43,8 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
             "index": "test/Test-CA/index.txt",
             "keySize": 4096,
             "validTime":  31536000
+            "certStore": "test/Test-CA/certs/by-name/",
+            "reqStore": "test/Test-CA/requests/"
         }
     }
 }
@@ -82,9 +86,9 @@ mod_wsgi can be used with Apache to mount cacophony. Example mod_wsgi files are 
 ### curl
 The authentication mechanism used in the front end webserver could be set up to use vastly different schemes. Instead of covering every possible authentication style which could be used we will work with two common ones in usage examples: htacces and kerberos.
 
-The first command will look up to see if a certificate already exists for an ENVIRONMENT/HOSTNAME. If it does it will return some basic json metadata. If it does not exist a 404 will be returned.
+The first command will look up to see if a known certificate already exists for an ENVIRONMENT/HOSTNAME. If it does it will return some basic json metadata. If it does not exist a 404 will be returned.
 
-The second command will attempt to create a new certificate. If the certificate doesn't exist it will be created and returned to the client. If a certificate has already been created for the host then a 409 with an error message will be returned.
+The second command will attempt to create a new certificate. If the certificate doesn't exist it will be created and returned, with the key, in pem format to the client. If a certificate has already been created for the host then a 409 with an error message will be returned.
 
 *Note*: Setting up the front end proxy server for authentication is out of scope for this documentation.
 
@@ -95,7 +99,7 @@ Password:
 ... # 200 and json data if exists, otherwise 404 and error json
 $ curl -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
 Password:
-... # 201 and a certificate returned
+... # 201 and a pem (key + cert) returned
 ```
 
 ### kerberos
@@ -105,5 +109,5 @@ Password for USERNAME@DOMAIN:
 $ curl --delegation policy -X GET https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
 ... # 200 and json data if exists, otherwise 404 and error json
 $ curl --delegation policy -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
-... # 201 and a certificate returned
+... # 201 and a pem (key + cert) returned
 ```

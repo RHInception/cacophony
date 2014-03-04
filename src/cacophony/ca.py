@@ -13,7 +13,9 @@ class CA(object):
     It expects certs/requests/keys in PEM format'''
 
     def __init__(self, pubCert=None, privKey=None, privPass=None,
-                 serial="CA/serial", index="CA/index.txt", keySize=4096,
+                 serial="CA/serial", index="CA/index.txt",
+                 certStore='CA/certs/by-name',
+                 reqStore='CA/requests/', keySize=4096,
                  validTime=60 * 60 * 24 * 365):
 
         self.privKey = crypto.load_privatekey(
@@ -26,6 +28,8 @@ class CA(object):
         self.validTime = validTime
         self.keySize = keySize
         self.index = os.path.realpath(index)
+        self.certStore = os.path.realpath(certStore)
+        self.reqStore = os.path.realpath(reqStore)
 
     def sign_server_cert(self, certRequest, format="string"):
         # given a CSR (PEM-encoded "string" or X509Req "object")
@@ -70,6 +74,11 @@ class CA(object):
 
         newcert.sign(self.privKey, "sha256")
 
+        # Get the CN and set it as the hostname for the output file
+        for key, val in newcert.get_subject().get_components():
+            if key == 'CN':
+                hostname = val
+
         # Update the serial and index.txt
         with open(self.serialFile, "w") as serialfile:
             serialfile.write('%x' % (self.serial + 1))
@@ -82,8 +91,13 @@ class CA(object):
             indexfile.write('V\t%s\t\t%x\tunknown\t%s\n' % (
                 newcert.get_notAfter(), self.serial, name))
 
+        cert_str = crypto.dump_certificate(crypto.FILETYPE_PEM, newcert)
+        with open(os.path.sep.join([
+                  self.certStore, hostname + '.crt']), 'w') as cert_file:
+            cert_file.write(cert_str)
+
         if format == "string":
-            return crypto.dump_certificate(crypto.FILETYPE_PEM, newcert)
+            return cert_str
         else:
             return newcert
 
@@ -99,10 +113,15 @@ class CA(object):
         req.get_subject().emailAddress = emailAddress
         req.sign(keys, "sha256")
 
+        req_str = crypto.dump_certificate_request(crypto.FILETYPE_PEM, req)
+        key_str = crypto.dump_privatekey(crypto.FILETYPE_PEM, keys)
+
+        with open(os.path.sep.join([
+                  self.reqStore, hostname + '.req']), 'w') as req_file:
+            req_file.write(req_str)
+
         if format == "string":
-            return (
-                crypto.dump_certificate_request(crypto.FILETYPE_PEM, req),
-                crypto.dump_privatekey(crypto.FILETYPE_PEM, keys))
+            return (req_str, key_str)
         else:
             return req, keys
 

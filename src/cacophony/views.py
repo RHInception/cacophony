@@ -53,7 +53,7 @@ class CertificateAPI(MethodView):
                         '%s generated an insecure certificate for %s' % (
                         request.remote_user, hostname))
 
-                req, keys = cur_ca.create_req(
+                req, key = cur_ca.create_req(
                     hostname=hostname, emailAddress=email)
                 cert = cur_ca.sign_server_cert(req, format="string")
                 return str(cert), 201
