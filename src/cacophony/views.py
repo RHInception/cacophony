@@ -56,7 +56,7 @@ class CertificateAPI(MethodView):
                 req, key = cur_ca.create_req(
                     hostname=hostname, emailAddress=email)
                 cert = cur_ca.sign_server_cert(req, format="string")
-                return str(cert), 201
+                return str(key + '\n' +  cert), 201
             return json.dumps({'error': 'Host already exists'}), 409
         except KeyError, ke:
             return json.dumps({'error': 'Missing ' + str(ke)}), 400
