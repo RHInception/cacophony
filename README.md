@@ -42,7 +42,7 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
             "serial": "test/Test-CA/serial",
             "index": "test/Test-CA/index.txt",
             "keySize": 4096,
-            "validTime":  31536000
+            "validTime":  31536000,
             "certStore": "test/Test-CA/certs/by-name/",
             "reqStore": "test/Test-CA/requests/"
         }
