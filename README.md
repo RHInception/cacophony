@@ -66,21 +66,22 @@ This decorator assumes that cacophony is running behind another web server which
 ### /api/v2/certificate/*$ENVIRONMENT*/*$HOSTNAME*/
 
 #### GET
-*Response Type*: json
-*Auth Required*: Yes
-*Input Format*: None
-*Inputs*: None
+* **Response Type**: json
+* **Auth Required**: Yes
+* **Input Format**: None
+* **Inputs**: None
 
 
 #### PUT
-*Response Type*: json on error, text pem on cert creation
-*Auth Required*: Yes
-*Input Format*: json
-*Inputs*:
+* **Response Type**: json on error, text pem on cert creation
+* **Auth Required**: Yes
+* **Input Format**: json
+* **Inputs**:
+
 | Name       | Type | Description                           | Example                                     |
 | :--------: | :--: | :-----------------------------------: | :-----------------------------------------: |
 | email      | str  | Email of the owner                    | owner@example.com                           |
-| alt\_names | list | List of other domains the cert is for | ['test.example.com', 'another.example.com'] |
+| alt\_names | list | List of other domains the cert is for | ["test.example.com", "another.example.com"] |
 
 ## Deployment
 
