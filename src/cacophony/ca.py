@@ -31,7 +31,7 @@ class CA(object):
         self.certStore = os.path.realpath(certStore)
         self.reqStore = os.path.realpath(reqStore)
 
-    def sign_server_cert(self, certRequest, format="string"):
+    def sign_server_cert(self, certRequest, alt_names=[], format="string"):
         # given a CSR (PEM-encoded "string" or X509Req "object")
         # sign and return an X509 cert object
         newcert = crypto.X509()
@@ -55,7 +55,7 @@ class CA(object):
         newcert.set_issuer(self.pubCert.get_subject())
         newcert.set_pubkey(req.get_pubkey())
         # Basic x509 extensions for a server cert
-        newcert.add_extensions([
+        extensions = [
             # Not a CA
             crypto.X509Extension("basicConstraints", True, "CA:FALSE"),
             # What you can use the key for
@@ -70,7 +70,16 @@ class CA(object):
                                  "keyid:always", issuer=self.pubCert),
             # "type" of cert
             crypto.X509Extension("extendedKeyUsage", False, "serverAuth")
-        ])
+        ]
+
+        if alt_names:
+            alt_str = ""
+            for alt in alt_names:
+                alt_str += "DNS:" + alt + ", "
+            alt_str = alt_str[:-2]
+            extensions.append(crypto.X509Extension(
+                "subjectAltName", False, alt_str))
+        newcert.add_extensions(extensions)
 
         newcert.sign(self.privKey, "sha256")
 

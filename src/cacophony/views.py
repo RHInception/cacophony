@@ -74,7 +74,7 @@ class V1CertificateAPI(MethodView):
         try:
             data = json.loads(request.data)
             email = data['email']
-            insecure_policy = bool(data.get('insecure_policy', False))
+            alt_names = data.get('alt_names', [])
             app.logger.debug(
                 'PUT request by %s: environment="%s", '
                 'hostname="%s", data="%s".' % (
@@ -84,11 +84,13 @@ class V1CertificateAPI(MethodView):
             if hostname not in cur_ca.list_certs().keys():
                 req, key = cur_ca.create_req(
                     hostname=hostname, emailAddress=email)
-                cert = cur_ca.sign_server_cert(req, format="string")
-                if insecure_policy:
+                cert = cur_ca.sign_server_cert(
+                    req, alt_names=alt_names, format="string")
+                if alt_names:
                     app.logger.warn(
-                        '%s generated an insecure certificate for %s/%s' % (
-                            identifier, environment, hostname))
+                        '%s generated a certificate with alt_names of '
+                        '"%s" for %s/%s' % (
+                            identifier, alt_names, environment, hostname))
                 else:
                     app.logger.info(
                         '%s generated a certificate for %s/%s' % (
