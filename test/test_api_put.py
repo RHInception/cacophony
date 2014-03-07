@@ -85,7 +85,7 @@ class TestAPIPut(TestCase):
 
     def test_create_new_cert_fails_if_cert_exists(self):
         """
-        If a certificate already exists one not should be be able to
+        If a certificate already exists one should not be be able to
         be created.
         """
         data = json.dumps({'email': 'test@example.com'})
