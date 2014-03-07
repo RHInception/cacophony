@@ -63,7 +63,7 @@ This decorator assumes that cacophony is running behind another web server which
 
 
 ## URLs
-### /api/v2/certificate/*$ENVIRONMENT*/*$HOSTNAME*/
+### /api/v1/certificate/*$ENVIRONMENT*/*$HOSTNAME*/
 
 #### GET
 * **Response Type**: json
