@@ -35,7 +35,7 @@ cp -rf contrib/test-ca-script/* $RPM_BUILD_ROOT/%{_datarootdir}/cacophony/test-c
 
 
 %files
-%doc README.md LICENSE
+%doc README.md LICENSE AUTHORS
 %{python_sitelib}/*
 %{_datarootdir}/cacophony/*
 
