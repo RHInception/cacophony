@@ -87,6 +87,8 @@ This decorator assumes that cacophony is running behind another web server which
 
 *Note*: However you deploy cacophony make sure the application server can read and write to the files listed in the CA section. If the appserver can not read or write to the files errors will occur.
 
+**WARNING**: DO NOT USE THE Test-CA FOR ANYTHING OTHER THAN TESTING!!!!
+
 ### Apache with mod\_wsgi
 mod_wsgi can be used with Apache to mount cacophony. Example mod_wsgi files are located in contrib/mod_wsgi.
 
