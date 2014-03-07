@@ -95,6 +95,8 @@ mod_wsgi can be used with Apache to mount cacophony. Example mod_wsgi files are 
 
 *Note*: When using mod_wsgi you will still need to set up authentication such as mod_auth_kerb.
 
+*Note*: Makes ure that Apache has access to the CA files. You should check both normal permissions as well as SELinux!
+
 ## Usage
 
 ### curl
@@ -120,8 +122,8 @@ Password:
 ```
 $ kinit -f USERNAME
 Password for USERNAME@DOMAIN:
-$ curl --delegation policy -X GET https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
+$ curl --negotiate -u 'a:a' policy -X GET https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
 ... # 200 and json data if exists, otherwise 404 and error json
-$ curl --delegation policy -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
+$ curl --negotiate -u 'a:a' -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
 ... # 201 and a pem (key + cert) returned
 ```
