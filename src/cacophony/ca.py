@@ -34,7 +34,7 @@ class CA(object):
                  validTime=60 * 60 * 24 * 365):
 
         self.privKey = crypto.load_privatekey(
-            crypto.FILETYPE_PEM, open(privKey, "r").read(), privPass)
+            crypto.FILETYPE_PEM, open(privKey, "r").read(), str(privPass))
         self.pubCert = crypto.load_certificate(
             crypto.FILETYPE_PEM, open(pubCert, "r").read())
 
