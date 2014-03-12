@@ -70,12 +70,12 @@ class V1CertificateAPI(MethodView):
                 }), 200
             app.logger.info(
                 "%s request for %s/%s as not found. Unknown host." % (
-                identifier, environment, hostname))
+                    identifier, environment, hostname))
             return json.dumps({'error': 'Host not found'}), 404
         except KeyError, ke:
             app.logger.info(
                 "%s request for %s/%s as not found. Unknown environment." % (
-                identifier, environment, hostname))
+                    identifier, environment, hostname))
             return json.dumps({'error': 'Unknown environment'}), 400
 
     def put(self, environment, hostname):
@@ -109,7 +109,7 @@ class V1CertificateAPI(MethodView):
                 else:
                     app.logger.info(
                         '%s generated a certificate for %s/%s' % (
-                        identifier, environment, hostname))
+                            identifier, environment, hostname))
 
                 return str(key + '\n' + cert), 201
             app.logger.warn(
