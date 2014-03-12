@@ -4,6 +4,7 @@ test/Test-CA/certs/
 test/Test-CA/requests/
 test/Test-CA/index.txt
 tox/
+rpm-build/
 
 # C extensions
 *.so

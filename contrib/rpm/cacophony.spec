@@ -1,6 +1,6 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
 
-Name:           python-cacophony
+Name:           cacophony
 Version:        0.0.1
 Release:        1%{?dist}
 Summary:        Simple REST Api for automagic SSL certificate generation
@@ -19,7 +19,7 @@ Simple REST Api for automagic SSL certificate generation.
 
 
 %prep
-%setup -q -n cacophony-%{version}
+%setup -q
 
 
 %build

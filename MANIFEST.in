@@ -2,6 +2,8 @@ include LICENSE
 include AUTHORS
 include MANIFEST.in
 include README.md
+include tox.ini
+include Makefile
 include config.json
 include setup.py
 recursive-include contrib *
