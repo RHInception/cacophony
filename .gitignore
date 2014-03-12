@@ -3,6 +3,7 @@ cacophony.log
 test/Test-CA/certs/
 test/Test-CA/requests/
 test/Test-CA/index.txt
+tox/
 
 # C extensions
 *.so
