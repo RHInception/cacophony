@@ -39,10 +39,12 @@ class TestAPIPut(TestCase):
             certificate = OpenSSL.crypto.load_certificate(
                 OpenSSL.crypto.FILETYPE_PEM,
                 crt.read())
-            for x in range(0, certificate.get_extension_count()):
-                self.assertNotEquals(
-                    'subjectAltName',
-                    certificate.get_extension(x).get_short_name())
+            # If we can look at the extensions then we can check the altnames
+            if getattr(certificate, 'get_extension_count', None):
+                for x in range(0, certificate.get_extension_count()):
+                    self.assertNotEquals(
+                        'subjectAltName',
+                        certificate.get_extension(x).get_short_name())
 
         data = json.dumps({
             'email': 'test@example.com',
@@ -61,16 +63,18 @@ class TestAPIPut(TestCase):
             certificate = OpenSSL.crypto.load_certificate(
                 OpenSSL.crypto.FILETYPE_PEM,
                 crt.read())
-            for x in range(0, certificate.get_extension_count()):
-                if 'subjectAltName' == certificate.get_extension(
-                        x).get_short_name():
-                    found_alt_names = True
-                    assert 'multi1.example.com' in certificate.get_extension(
-                        x).get_data()
-                    assert 'multi2.example.com' in certificate.get_extension(
-                        x).get_data()
+            # If we can look at the extensions then we can check the altnames
+            if getattr(certificate, 'get_extension_count', None):
+                for x in range(0, certificate.get_extension_count()):
+                    if 'subjectAltName' == certificate.get_extension(
+                            x).get_short_name():
+                        found_alt_names = True
+                        assert 'multi1.example.com' in certificate.get_extension(
+                            x).get_data()
+                        assert 'multi2.example.com' in certificate.get_extension(
+                            x).get_data()
 
-        assert found_alt_names
+                assert found_alt_names
 
     def test_create_new_cert_fails_on_missing_inputs(self):
         """
