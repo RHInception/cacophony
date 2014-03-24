@@ -14,6 +14,31 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+class DevUserMiddleware(object):
+    """
+    Allows any username/password pair to be considered 'authenticated'.
+
+    This is only for demoing and testing. DO NOT USE THIS FOR AUTH!!!!
+    """
+    import base64
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        auth = environ.get('HTTP_AUTHORIZATION', None)
+        if auth:
+            try:
+                scheme, b64data = auth.split(None, 1)
+                user, password = self.base64.decodestring(b64data).split(':')
+                environ['REMOTE_USER'] = user
+            except Exception, ex:
+                print ex
+                pass
+        return self.app(environ, start_response)
+
+
 if __name__ == '__main__':
     import os
     import sys
@@ -21,4 +46,5 @@ if __name__ == '__main__':
     os.environ['CACOPHONY_CONFIG'] = 'example-settings.json'
     print "DO NOT USE rundevserver IN PRODUCTION ENVIRONMENTS!"
     from cacophony import app
+    app.wsgi_app = DevUserMiddleware(app.wsgi_app)
     app.run(debug=True)
