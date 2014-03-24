@@ -99,6 +99,13 @@ mod_wsgi can be used with Apache to mount cacophony. Example mod_wsgi files are 
 
 *Note*: Makes ure that Apache has access to the CA files. You should check both normal permissions as well as SELinux!
 
+### Gunicorn
+Gunicorn (http://gunicorn.org/) is a popular open source Python WSGI server. It's still recommend to use Apache (or another web server) to handle auth before gunicorn since gunicorn itself is not set up for it.
+
+```
+$ gunicorn --user=YOUR_WORKER_USER --group=YOUR_WORKER_GROUP -D -b 127.0.0.1:5000 --access-logfile=/your/access.log --error-logfile=/your/error.log -e CACOPHONY_CONFIG=/full/path/to/settings.json cacophony:app
+```
+
 ## Usage
 
 ### curl
@@ -115,7 +122,7 @@ The second command will attempt to create a new certificate. If the certificate 
 $ curl -X GET --user "USERNAME" https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/HOSTNAME/
 Password:
 ... # 200 and json data if exists, otherwise 404 and error json
-$ curl -X PUT -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
+$ curl -X PUT --user "USERNAME" -H "Content-Type: application/json" -d '{"email": "USER@EXAMPLE.COM"}' https://cacophony.example.com/api/v1/certificate/ENVIRONMENT/NEWHOST/
 Password:
 ... # 201 and a pem (key + cert) returned
 ```
