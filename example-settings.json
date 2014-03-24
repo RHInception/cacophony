@@ -14,6 +14,7 @@
             "keySize": 4096,
             "validTime":  31536000,
             "certStore": "test/Test-CA/certs/by-name/",
+            "altnames": "test/Test-CA/altnames",
             "reqStore": "test/Test-CA/requests/"
         }
     }

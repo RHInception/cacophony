@@ -64,10 +64,14 @@ class V1CertificateAPI(MethodView):
             # if the hostname does not exist ...
             cert_list = cur_ca.list_certs()
             if hostname in cert_list.keys():
-                return json.dumps({
+                data = {
                     'owner': cert_list[hostname]['_cn_email'],
                     'hostname': hostname,
-                }), 200
+                    'is_altname': False,
+                }
+                if 'is_altname' in cert_list[hostname].keys():
+                    data['is_altname'] = cert_list[hostname]['is_altname']
+                return json.dumps(data), 200
             app.logger.info(
                 "%s request for %s/%s as not found. Unknown host." % (
                     identifier, environment, hostname))
@@ -97,6 +101,10 @@ class V1CertificateAPI(MethodView):
             cur_ca = ALL_CAS[environment]
             # if the hostname does not exist ...
             if hostname not in cur_ca.list_certs().keys():
+                for alt_name in alt_names:
+                    if alt_name in cur_ca.list_certs():
+                        return json.dumps(
+                            {'error': 'Alt Name host already exists'}), 409
                 req, key = cur_ca.create_req(
                     hostname=hostname, emailAddress=email)
                 cert = cur_ca.sign_server_cert(

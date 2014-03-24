@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import copy
 import csv
 import os
 
@@ -30,6 +31,7 @@ class CA(object):
     def __init__(self, pubCert=None, privKey=None, privPass=None,
                  serial="CA/serial", index="CA/index.txt",
                  certStore='CA/certs/by-name',
+                 altnames="CA/altnames",
                  reqStore='CA/requests/', keySize=4096,
                  validTime=60 * 60 * 24 * 365):
 
@@ -44,6 +46,7 @@ class CA(object):
         self.keySize = keySize
         self.index = os.path.realpath(index)
         self.certStore = os.path.realpath(certStore)
+        self.altnames = os.path.realpath(altnames)
         self.reqStore = os.path.realpath(reqStore)
 
     def sign_server_cert(self, certRequest, alt_names=[], format="string"):
@@ -120,6 +123,10 @@ class CA(object):
                   self.certStore, hostname + '.crt']), 'w') as cert_file:
             cert_file.write(cert_str)
 
+        with open(self.altnames, "a") as altnamesfile:
+            for alt_name in alt_names:
+                altnamesfile.write("%s\t%s\n" % (alt_name, hostname))
+
         if format == "string":
             return cert_str
         else:
@@ -172,4 +179,15 @@ class CA(object):
                     else:
                         item['_cn_%s' % (key)] = data[1]
             results[item['_cn_hostname']] = item
+
+        alt_reader = csv.DictReader(
+            open(self.altnames, 'r'),
+            fieldnames=['Alt Name', 'Parent Host'], dialect=csv.excel_tab)
+
+        # Check for alt items
+        for item in alt_reader:
+            if item['Parent Host'] in results.keys():
+                results[item['Alt Name']] = copy.copy(
+                    results[item['Parent Host']])
+                results[item['Alt Name']]['is_altname'] = True
         return results

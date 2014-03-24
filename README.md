@@ -25,6 +25,7 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
 | keySize         | int  | "ENVIRONMENT" | Key size to use                                                     |
 | validTime       | int  | "ENVIRONMENT" | Length of time the certificates will be valid for.                  |
 | certStore       | str  | "ENVIRONMENT" | Path to write out certificates after generation.                    |
+| altnames        | str  | "ENVIRONMENT" | Path to the file which holds altname\tparent host                   |
 | reqStore        | str  | "ENVIRONMENT" | Path to write out requests after generation.                        |
 
 
@@ -45,6 +46,7 @@ You can override the location by setting `CACOPHONY_CONFIG` environment variable
             "keySize": 4096,
             "validTime":  31536000,
             "certStore": "test/Test-CA/certs/by-name/",
+            "altnames": "test/Test-CA/altnames",
             "reqStore": "test/Test-CA/requests/"
         }
     }
