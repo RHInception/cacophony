@@ -1,5 +1,5 @@
 # cacophony
-Simple REST Api for automagic SSL certificate generation.
+Simple REST Api for automatic SSL certificate generation.
 
 **Note**: This tool is currently targeting development like environments. It's not recommended to use cacophony for anything sensitive or production related yet.
 
