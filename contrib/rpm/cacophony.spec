@@ -10,7 +10,7 @@ URL:            https://github.com/RHInception/cacophony
 Source0:        cacophony-%{version}.tar.gz
 
 BuildArch:      noarch
-BuildRequires:  python-devel
+BuildRequires:  python2-devel, python-setuptools
 Requires:       python-flask>=0.9, pyOpenSSL>=0.13.1
 
 
@@ -19,7 +19,7 @@ Simple REST Api for automagic SSL certificate generation.
 
 
 %prep
-%setup -q
+%setup -q -n cacophony-%{version}
 
 
 %build
