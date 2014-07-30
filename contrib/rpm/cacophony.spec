@@ -2,8 +2,8 @@
 
 Name:           cacophony
 Version:        0.0.1
-Release:        1%{?dist}
-Summary:        Simple REST Api for automagic SSL certificate generation
+Release:        2%{?dist}
+Summary:        Simple REST Api for automatic SSL certificate generation
 
 License:        AGPLv3+
 URL:            https://github.com/RHInception/cacophony
@@ -15,7 +15,7 @@ Requires:       python-flask>=0.9, pyOpenSSL>=0.13.1
 
 
 %description
-Simple REST Api for automagic SSL certificate generation.
+Simple REST Api for automatic SSL certificate generation.
 
 
 %prep
@@ -42,5 +42,8 @@ cp -rf contrib/test-ca-script/* $RPM_BUILD_ROOT/%{_datarootdir}/cacophony/test-c
 
 
 %changelog
+* Wed Jul 30 2014 Tim Bielawa <tbielawa@redhat.com> - 0.0.1-2
+- s/magic/matic/
+
 * Wed Feb 26 2014 Steve Milner <stevem@gnulinux.net>- 0.0.1-1
 - Initial spec
