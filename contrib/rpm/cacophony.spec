@@ -2,7 +2,7 @@
 
 Name:           cacophony
 Version:        0.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Simple REST Api for automatic SSL certificate generation
 
 License:        AGPLv3+
@@ -10,8 +10,12 @@ URL:            https://github.com/RHInception/cacophony
 Source0:        cacophony-%{version}.tar.gz
 
 BuildArch:      noarch
-BuildRequires:  python2-devel, python-setuptools
-Requires:       python-flask>=0.9, pyOpenSSL>=0.13.1
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+Requires:       python-flask >= 0.9
+Requires:       pyOpenSSL >= 0.13.1
+Requires:       python-werkzeug
+Requires:       python-jinja2-26
 
 
 %description
@@ -42,6 +46,12 @@ cp -rf contrib/test-ca-script/* $RPM_BUILD_ROOT/%{_datarootdir}/cacophony/test-c
 
 
 %changelog
+* Thu Aug 07 2014 Chris Murphy <chmurphy@redhat.com> - 0.0.1-3
+- Added new Requires based on yum output on fresh install.
+- Fixed original Requires version dependency syntax so that yum
+  can interpret the package requirements correctly.
+- Add example Apache config for authenticating using Kerberos
+
 * Wed Jul 30 2014 Tim Bielawa <tbielawa@redhat.com> - 0.0.1-2
 - s/magic/matic/
 
