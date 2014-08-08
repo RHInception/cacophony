@@ -16,6 +16,15 @@ Requires:       python-flask >= 0.9
 Requires:       pyOpenSSL >= 0.13.1
 Requires:       python-werkzeug
 Requires:       python-jinja2-26
+Requires:       python-itsdangerous
+Requires:       python-babel
+Requires:       python-docutils
+Requires:       python-imaging
+Requires:       python-jinja2
+Requires:       python-markupsafe
+Requires:       python-pygments
+Requires:       python-sphinx
+Requires:       python-setuptools
 
 
 %description
